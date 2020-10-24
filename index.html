@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Node.js Technical Documentation</title>
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+
+  <body>
+    
+    <nav id="navbar">
+        <header>Node.js Documentation</header>
+        <a href="#Technical_details" class="nav-link">Technical details</a>
+        <a href="#Internals" class="nav-link">Internals</a>
+        <a href="#Threading" class="nav-link">Threading</a>
+        <a href="#Package_management" class="nav-link">Package management</a>
+        <a href="#Event_loop" class="nav-link">Event loop</a>
+    </nav>
+
+    <main id="main-doc">
+      <section class="main-section" id="Technical_details">
+        <header>Technical details</header>
+        <p>Node.js is a JavaScript runtime environment that processes incoming requests in a loop, called the event loop.</p>
+      </section>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <section class="main-section" id="Internals">
+        <header>Internals</header>
+        <p>Node.js uses libuv underhood to handle asynchronous events. Libuv is an abstraction layer for network and file system functionality on both Windows and POSIX-based systems such as Linux, macOS, OSS on NonStop, and Unix.</p>
+      </section>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <section class="main-section" id="Threading">
+        <header>Threading</header>
+        <p>Node.js operates on a single-thread event loop, using non-blocking I/O calls, allowing it to support tens of thousands of concurrent connections without incurring the cost of thread context switching.[70] The design of sharing a single thread among all the requests that use the observer pattern is intended for building highly concurrent applications, where any function performing I/O must use a callback.</p>
+        <p><strong>The form of a callback varies among programming languages:</strong></p>
+         <ul>
+           <li>In assembly, C, C++, Pascal, Modula2 and similar languages, a machine-level pointer to a function may be passed as an argument to another (internal or external) function.</li>
+           <li>C++ allows objects to provide their own implementation of the function call operation. The Standard Template Library accepts these objects (called functors), as well as function pointers, as parameters to various polymorphic algorithms.</li>
+           <li>Many dynamic languages, such as JavaScript, Lua, Python, Perl[2][3] and PHP, simply allow a function object to be passed through.</li>
+           <li>CLI languages such as C# and VB.NET provide a type-safe encapsulating reference, a "delegate", to define well-typed function pointers. These can be used as callbacks.</li>
+           <li>Events and event handlers, as used in .NET languages, provide generalized syntax for callbacks.</li>
+           <li>Functional languages generally support first-class functions, which can be passed as callbacks to other functions, stored as data or returned from functions.</li>
+         </ul>
+         <p><strong>The following C code demonstrates the usage of callbacks</strong></p>
+         <pre>                                            <code>#include <stdio.h>
+                                            #include <string.h>
+                                            typedef struct _MyMsg {
+                                                int appId;
+                                                char msgbody[32];
+                                            } MyMsg;
+                                            void myfunc(MyMsg *msg)
+                                            {
+                                                if (strlen(msg->msgbody) > 0 )
+                                                    printf("App Id = %d \nMsg = %s \n",msg->appId, msg->msgbody);
+                                                else
+                                                    printf("App Id = %d \nMsg = No Msg\n",msg->appId);
+                                            }
+                                            void (*callback)(MyMsg *);
+                                            int main(void)
+                                            {
+                                                MyMsg msg1;
+                                                msg1.appId = 100;
+                                                strcpy(msg1.msgbody, "This is a test\n");
+                                                callback = myfunc;
+                                                callback(&msg1);
+                                                return 0;
+                                            }</code></pre>
+          <p><strong>A simple callback in C#:</strong></p>
+          <pre>                                             <code>public class Class1
+                                            {
+                                                static void Main(string[] args)
+                                                {
+                                                    Class2 c2 = new Class2();
+                                                    c2.Method(CallBackMethod);
+                                                }
+                                                static void CallBackMethod(string str)
+                                                {
+                                                    Console.WriteLine($"Callback was: {str}");
+                                                }
+                                            }
+                                                public class Class2
+                                            {
+                                                public void Method(Action<string> callback)
+                                                {
+                                                    callback("The message to send back");
+                                                }
+                                            }</code></pre>
+          <p><strong>Callbacks are used in the implementation of languages such as JavaScript</strong></p>
+          <pre>                                            <code>function calculate(num1, num2, callbackFunction) {
+                                                return callbackFunction(num1, num2);
+                                            }
+                                            function calcProduct(num1, num2) {
+                                                return num1 * num2;
+                                            }
+                                            function calcSum(num1, num2) {
+                                                return num1 + num2;
+                                            }
+                                            alert(calculate(5, 15, calcProduct));
+                                            alert(calculate(5, 15, calcSum));</code></pre>
+          <p><strong>A classic use of callbacks in Python (and other languages) is to assign events to UI elements.</strong></p>
+           <pre>                                            <code>>>> def get_square(val):
+                                            ...     """The callback."""
+                                            ...     return val ** 2
+                                            ...
+                                            >>> def caller(func, val):
+                                            ...     return func(val)
+                                            ...
+                                            >>> caller(get_square, 5)
+                                            25</code></pre>
+      </section>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <section class="main-section" id="Package_management">
+        <header>Package management</header>
+        <p>npm is the pre-installed package manager for the Node.js server platform. It installs Node.js programs from the npm registry, organizing the installation and management of third-party Node.js programs. Packages in the npm registry can range from simple helper libraries such as Lodash to task runners such as Grunt.</p>
+      </section>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <section class="main-section" id="Event_loop">
+        <header>Event loop</header>
+        <p> Node.js uses an event loop for scalability, instead of processes or threads</p>
+        <p>Due to the predominance of graphical user interfaces, most modern applications feature a main loop. The get_next_message() routine is typically provided by the operating system, and blocks until a message is available. Thus, the loop is only entered when there is something to process.</p>
+            <pre>                                            <code>function main
+                                            initialize()
+                                            while message != quit
+                                               message := get_next_message()
+                                               process_message(message)
+                                            end while
+                                            end function</code></pre>
+      </section>
+    </main>
+
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js" charset="utf-8"></script>
+  </body>
+  </html>
